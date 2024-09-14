@@ -22,6 +22,8 @@ def ping_ip():
         update_Dots()
 
         result_label.config(text="")
+        averageConnectSpeed.config(text="")
+        button.config(state=tk.DISABLED)
         root.update_idletasks()
         ip = ip_address.get().split(";")
         expand = 0
@@ -49,7 +51,7 @@ def ping_ip():
                                 avg += 0
                             avg += int(j)
                         averageConnect += avg / len(pingTime)
-                        avg = str(avg / len(pingTime)) + "ms"
+                        avg = str(round(avg,2) / len(pingTime)) + " ms"
                     else:
                         avg = "<1ms"
                         averageConnect += 0
@@ -75,7 +77,7 @@ def ping_ip():
                     count += 1
             except subprocess.CalledProcessError:
                 previousText = result_label.cget("text")
-                previousText += f"Error pinging {i}\n\n"
+                previousText += f"Error pinging IP: {i}\n\n"
                 if count > 6:
                     getX = root.geometry().find("x")
                     getPlus = root.geometry().find("+")
@@ -84,14 +86,18 @@ def ping_ip():
                 root.update_idletasks()
                 count += 1
         stop_spinner = True
-        previousText = result_label.cget("text")
-        if averageConnect/averageCount != 0:
-            averageConnect = averageConnect/averageCount
+        if averageCount != 0:
+            if averageConnect/averageCount != 0:
+                averageConnect = round(averageConnect/averageCount,2)
+            else:
+                averageConnect = "<1"
+            averageConnectSpeed.config(text=f"Celková průměrná odezva: {averageConnect} ms")
         else:
-            averageConnect = "<1"
-        
-        result_label.config(text=previousText + f"Celková průměrná odezva: {averageConnect} ms")
+            pass
+        button.config(state=tk.NORMAL)
         status.config(text="Výsledky ping:")
+        previousText = result_label.cget("text")[:len(result_label.cget("text"))-2]
+        result_label.config(text=previousText)
         root.update_idletasks()
     else:
         status.config(text="Zadejte prosím IP")
@@ -114,11 +120,14 @@ ip_address.pack()
 button = tk.Button(root, text="PING", command=start_ping)
 button.pack(pady=5)
 
-status = tk.Label(root,text="",font=("Arial",12))
+status = tk.Label(root,text="",font=("Arial",12,"bold"))
 status.pack()
 
 result_label = tk.Label(root, text="", font=("Arial", 12), justify="left")
 result_label.pack()
+
+averageConnectSpeed = tk.Label(root, text="", font=("Arial", 12,"bold"), justify="left")
+averageConnectSpeed.pack(pady=2)
 
 
 root.mainloop()
