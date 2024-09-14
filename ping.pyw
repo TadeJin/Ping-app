@@ -28,7 +28,8 @@ def ping_ip():
         if (len(ip) > 8):
             expand = 30
         count = 0
-        
+        averageConnect = 0
+        averageCount = 0;        
         
 
         for i in ip:
@@ -47,9 +48,11 @@ def ping_ip():
                             if (j == "<1"):
                                 avg += 0
                             avg += int(j)
+                        averageConnect += avg / len(pingTime)
                         avg = str(avg / len(pingTime)) + "ms"
                     else:
                         avg = "<1ms"
+                        averageConnect += 0
                     previousText = result_label.cget("text")
                     previousText += f"Pinged: {i} průměrná odezva: {avg}\n\n"
                     if count > 6:
@@ -59,6 +62,7 @@ def ping_ip():
                     result_label.config(text=previousText)
                     root.update_idletasks()
                     count += 1
+                    averageCount += 1
                 else: 
                     previousText = result_label.cget("text")
                     previousText += f"Pinged {i} Reply: Destination host unreachable\n\n"
@@ -80,6 +84,13 @@ def ping_ip():
                 root.update_idletasks()
                 count += 1
         stop_spinner = True
+        previousText = result_label.cget("text")
+        if averageConnect/averageCount != 0:
+            averageConnect = averageConnect/averageCount
+        else:
+            averageConnect = "<1"
+        
+        result_label.config(text=previousText + f"Celková průměrná odezva: {averageConnect} ms")
         status.config(text="Výsledky ping:")
         root.update_idletasks()
     else:
