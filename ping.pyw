@@ -109,6 +109,5 @@ status.pack()
 result_label = tk.Label(root, text="", font=("Arial", 12), justify="left")
 result_label.pack()
 
-stop_spinner = False
 
 root.mainloop()
